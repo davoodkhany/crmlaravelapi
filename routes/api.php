@@ -19,7 +19,10 @@ Route::prefix('v1')->group(function () {
 
     Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
         // return response()->json(['user' => $request->user()], 200);
+    });
 
+    Route::get('/test',function(){
+        dd('test');
     });
 
     Route::group(['middleware' => 'auth:sanctum'], function () {

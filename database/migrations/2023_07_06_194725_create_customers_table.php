@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('national_code');
             $table->integer('responsible');
             $table->timestamps();
-
+            
         });
     }
 
@@ -30,5 +30,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('customers');
-    }
+
+  }
 };
