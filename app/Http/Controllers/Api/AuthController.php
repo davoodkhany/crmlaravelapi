@@ -19,7 +19,7 @@ class AuthController extends Controller
     {
 
         $user = User::create([
-            'name' => $request['name'],
+            'name' => $request['given_name'] + $request ['family_name'] ,
             'email' => $request['email'],
             'password' => Hash::make($request['password']),
         ]);
@@ -30,12 +30,10 @@ class AuthController extends Controller
 
         if ($user) {
             $token = $user->createToken('create-token')->plainTextToken;
-
             return response()->json(['user' => $user, 'token' => $token], 200);
         } else {
             return response()->json(['message' => 'Failed to create user.'], 500);
         }
-
 
     }
 

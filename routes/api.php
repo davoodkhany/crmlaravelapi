@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\Auth\SocialAuth\SocialController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -21,7 +22,9 @@ Route::prefix('v1')->group(function () {
         return response()->json(['user' => $request->user()], 200);
     });
 
-
+    Route::group(['middleware' => 'auth:sanctum'], function () {
+        Route::post('/auth/sign-out', [AuthController::class, 'SignOut']);
+    });
 
     // Route Auth
     Route::controller(AuthController::class)->prefix('auth')->group(function () {
@@ -30,14 +33,14 @@ Route::prefix('v1')->group(function () {
         Route::post('/email-verified', 'isEmailExists');
     });
 
+    // Social Auth
 
+    Route::post('/auth/google-login', [SocialController::class, 'googleLogin']);
     // SignOut Route
     Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::controller(AuthController::class)->prefix('auth')->group(function () {
             Route::post('/sign-out', 'SignOut');
         });
     });
-
-
 
 });
