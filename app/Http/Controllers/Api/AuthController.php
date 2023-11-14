@@ -7,6 +7,7 @@ use App\Http\Requests\Api\AuthRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
@@ -17,16 +18,11 @@ class AuthController extends Controller
 
     public function createUser(AuthRequest $request)
     {
-
         $user = User::create([
-            'name' => $request['given_name'] + $request ['family_name'] ,
+            'name' => $request['name'],
             'email' => $request['email'],
             'password' => Hash::make($request['password']),
         ]);
-
-        // if ($request->fails()) {
-        //     return $request['email'];
-        // }
 
         if ($user) {
             $token = $user->createToken('create-token')->plainTextToken;
@@ -34,7 +30,6 @@ class AuthController extends Controller
         } else {
             return response()->json(['message' => 'Failed to create user.'], 500);
         }
-
     }
 
     public function LoginUser(Request $request)
@@ -84,5 +79,16 @@ class AuthController extends Controller
         $user->tokens()->delete();
 
         return response()->json('Successful tokens Delete', 200);
+    }
+
+    public function ForgetPassword(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
+        $status = Password::sendResetLink(
+            $request->only('email')
+        );
+
+return $status;
+
     }
 }

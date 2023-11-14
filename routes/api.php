@@ -18,19 +18,20 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
 
+    // Route Auth
+    Route::controller(AuthController::class)->prefix('auth')->group(function () {
+        Route::post('/register', 'createUser');
+        Route::post('/login', 'LoginUser');
+        Route::post('/forget-password', 'ForgetPassword')->name('password.reset');
+        Route::post('/email-verified', 'isEmailExists');
+    });
+
     Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
         return response()->json(['user' => $request->user()], 200);
     });
 
     Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::post('/auth/sign-out', [AuthController::class, 'SignOut']);
-    });
-
-    // Route Auth
-    Route::controller(AuthController::class)->prefix('auth')->group(function () {
-        Route::post('/register', 'createUser');
-        Route::post('/login', 'LoginUser');
-        Route::post('/email-verified', 'isEmailExists');
     });
 
     // Social Auth
@@ -44,3 +45,4 @@ Route::prefix('v1')->group(function () {
     });
 
 });
+

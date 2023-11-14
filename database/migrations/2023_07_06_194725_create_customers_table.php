@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('national_code');
             $table->integer('responsible');
             $table->timestamps();
-            
+
         });
     }
 
