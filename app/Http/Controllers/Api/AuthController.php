@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
@@ -83,12 +84,29 @@ class AuthController extends Controller
 
     public function ForgetPassword(Request $request)
     {
+        
         $request->validate(['email' => 'required|email']);
+
+
         $status = Password::sendResetLink(
             $request->only('email')
         );
 
-return $status;
+
+        if($status == Password::RESET_LINK_SENT){
+            return[
+                'status' => __($status)
+            ];
+        }
+
+
+        throw ValidationException::withMessages([
+            'email' => [trans($status)]
+        ]);
+
+
+
 
     }
+
 }
