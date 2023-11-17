@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\AuthRequest;
 use App\Models\User;
+use App\Notifications\NotificationForgetPassword;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
@@ -84,28 +85,25 @@ class AuthController extends Controller
 
     public function ForgetPassword(Request $request)
     {
-        
-        $request->validate(['email' => 'required|email']);
 
-
-        $status = Password::sendResetLink(
-            $request->only('email')
-        );
-
-
-        if($status == Password::RESET_LINK_SENT){
-            return[
-                'status' => __($status)
-            ];
-        }
-
-
-        throw ValidationException::withMessages([
-            'email' => [trans($status)]
+        $request->validate([
+            'email' => 'required|email'
         ]);
 
+        $user = User::where('email', $request->input('email'))->first();
 
+        if(!$user){
+            return response()->json(['message' => 'ایمیل وارد شده معتبر نمی‌باشد']);
+        }
 
+        $user = User::where('email', $request->email)->first();
+        
+        if ($user) {
+            $token = Password::getRepository()->create($user);
+            $user->notify(new NotificationForgetPassword($token));
+        }
+
+        return response()->json(['message' => 'لینک بازیابی رمز عبور ارسال شد.']);
 
     }
 

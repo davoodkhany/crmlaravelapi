@@ -1,8 +1,9 @@
 <x-mail::message>
-    <x-mail::button :url="$token" :color="">
-    فراموشی رمز عبور
+{{-- resources/views/emails/custom_reset.blade.php --}}
+<x-mail::button :url="$Url" >
+{{ $actionText }}
 </x-mail::button>
 
-</x-mail::message>
 
+</x-mail::message>
 
