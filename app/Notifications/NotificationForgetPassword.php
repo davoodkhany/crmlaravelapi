@@ -20,6 +20,8 @@ class NotificationForgetPassword extends Notification implements  ShouldQueue
     public function __construct($token,$email)
     {
         $this->token = $token;
+        $this->email = $email;
+
     }
 
     /**
@@ -37,8 +39,7 @@ class NotificationForgetPassword extends Notification implements  ShouldQueue
      */
     public function toMail(object $notifiable): MailMessage
     {
-        $url = ('http://localhost:3000/auth/reset-password?'. $this->token);
-     
+        $url = ('http://localhost:3000/auth/reset-password'.'?token='.$this->token .'&email='.$this->email);
         return (new MailMessage)
         ->subject(Lang::get('اعلان بازیابی  رمز عبور'))
         ->line(Lang::get('شما این ایمیل را دریافت می کنید زیرا ما درخواست بازنشانی رمز عبور را برای حساب کاربری شما دریافت کرده ایم.'))

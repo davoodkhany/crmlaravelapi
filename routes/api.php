@@ -22,7 +22,8 @@ Route::prefix('v1')->group(function () {
     Route::controller(AuthController::class)->prefix('auth')->group(function () {
         Route::post('/register', 'createUser');
         Route::post('/login', 'LoginUser');
-        Route::post('/forget-password', 'ForgetPassword')->name('password.reset');
+        Route::post('/forget-password', 'ForgetPassword')->name('password.forget');
+        Route::post('/reset-password', 'ResetPassword')->name('password.reset');
         Route::post('/email-verified', 'isEmailExists');
     });
 
@@ -38,11 +39,17 @@ Route::prefix('v1')->group(function () {
 
     Route::post('/auth/google-login', [SocialController::class, 'googleLogin']);
     // SignOut Route
+
     Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::controller(AuthController::class)->prefix('auth')->group(function () {
             Route::post('/sign-out', 'SignOut');
         });
     });
+
+
+
+
+
 
 });
 

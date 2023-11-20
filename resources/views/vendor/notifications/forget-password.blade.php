@@ -3,7 +3,5 @@
 <x-mail::button :url="$Url" >
 {{ $actionText }}
 </x-mail::button>
-
-
 </x-mail::message>
 

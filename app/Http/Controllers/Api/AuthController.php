@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -87,23 +87,52 @@ class AuthController extends Controller
     {
 
         $request->validate([
-            'email' => 'required|email'
+            'email' => 'required|email',
         ]);
 
         $user = User::where('email', $request->input('email'))->first();
 
-        if(!$user){
+        if (!$user) {
             return response()->json(['message' => 'ایمیل وارد شده معتبر نمی‌باشد']);
         }
 
         $user = User::where('email', $request->email)->first();
-        
+
         if ($user) {
+
             $token = Password::getRepository()->create($user);
-            $user->notify(new NotificationForgetPassword($token));
+
+            $user->notify(new NotificationForgetPassword($token, $user->email));
         }
 
         return response()->json(['message' => 'لینک بازیابی رمز عبور ارسال شد.']);
+
+    }
+
+    public function ResetPassword(Request $request)
+    {
+         $validate = $request->validate([
+            'email' => 'required|email|exists:users,email',
+            'password' => 'required|min:8|confirmed',
+            'token' => 'required',
+        ]);
+
+        if (!$validate) {
+            return response()->json(['errors' => $validate]);
+        }
+
+        $status = Password::reset($request->only('email','password', 'password_confirmation', 'token'),function (User $user, string $password){
+            $user->forceFill([
+                'password' => Hash::make($password)
+            ])->setRememberToken(Str::random(60));
+            $user->save();
+
+        });
+
+        if ($status) {
+            return response()->json(['message' => 'پسورد شما با موفقیت تغییر کرد.']);
+        }
+
 
     }
 
